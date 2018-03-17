@@ -13,7 +13,7 @@ public class Database {
 
     public Database() {
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sam", "root", "");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sam", "root", "steve");
             System.out.println("Connection to the database has been established!!");
             prev_id = -1;
         } catch (SQLException e) {
