@@ -57,4 +57,11 @@ public class Controller {
 
     }
 
+    private PieChart.Data getPieDataObject(final String name){
+        // if there is no entry for this application then add one
+        if(!pieChartData.stream().filter(o -> o.getName().equals(name)).findFirst().isPresent())
+            pieChartData.add(new PieChart.Data(name, 0));
+        return pieChartData.stream().filter(o -> o.getName().equals(name)).findFirst().get();
+    }
+
 }
