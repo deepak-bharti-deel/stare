@@ -1,10 +1,8 @@
 package application;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXListView;
-import com.jfoenix.controls.JFXTreeTableView;
-import com.jfoenix.controls.RecursiveTreeItem;
+import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -12,6 +10,10 @@ import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.TreeItem;
+
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Set;
 
 public class Controller {
 
@@ -42,7 +44,15 @@ public class Controller {
     @FXML
     private Database database;
 
+    // Dynamically added nodes
+//    private JFXTreeTableColumn<Table, String> startTimeColumn;
+//    private JFXTreeTableColumn<Table, String> titleColumn;
+//    private JFXTreeTableColumn<Table, String> applicationColumn;
+
+    // Observable lists
+//    private ObservableList<Constraint>  constraintObservableList;
     private ObservableList<PieChart.Data> pieChartData;
+//    private ObservableList<Table> logTableObservableList;
 
     @FXML
     public void initialize(){
@@ -66,7 +76,30 @@ public class Controller {
 
     public void setDatabase(Database database) {
         this.database = database;
-//        setInitialData(1);
+        setInitialData(1);
+    }
+
+    // Sets initial data in pie chart and constraint
+    private void setInitialData(int days){
+        // Get pie chart data
+        try {
+            Hashtable<String,Integer> initialdata = database.fillPieChart(days);
+            Set<String> keys = initialdata.keySet();
+            for(String key: keys)
+                Platform.runLater(()-> getPieDataObject(key).setPieValue(initialdata.get(key)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // Constraint data
+        Platform.runLater(()-> {
+//            try {
+//                constraintObservableList.addAll(database.sendConstraints());
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+        });
     }
 
 
