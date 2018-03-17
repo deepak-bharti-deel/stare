@@ -35,7 +35,15 @@ public class Main extends Application {
         primaryStage.setTitle("Working ;) - STARE");
         primaryStage.setScene(new Scene(root, 1000, 700));
 
-
+        primaryStage.setOnCloseRequest(event -> {
+            Calendar c = Calendar.getInstance();
+            Date currentDate = c.getTime();
+            try {
+                db.setDuration(currentDate);           //update last activity in dtatbase
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
         primaryStage.show();
     }
 
@@ -43,7 +51,6 @@ public class Main extends Application {
         System.out.println(System.getProperty("user.dir"));
         launch(args);
     }
-
 
     public static Database getDb() {
         return db;
@@ -55,6 +62,5 @@ public class Main extends Application {
         Thread t = new Thread(activityThread);
         t.start();
     }
-
 
 }
