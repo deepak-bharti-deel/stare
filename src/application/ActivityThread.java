@@ -30,6 +30,7 @@ public class ActivityThread implements Runnable {
                     // db.sendUpdates();
                     continue;
                 }else {
+                    // causing issue
 //                    System.out.println("inserting to db");
 //                    int result = db.insertLog(s);
 //                    if (result == 1) {
