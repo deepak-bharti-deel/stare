@@ -7,13 +7,19 @@ import javafx.beans.Observable;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Set;
@@ -143,7 +149,47 @@ public class Controller {
         return pieChartData.stream().filter(o -> o.getName().equals(name)).findFirst().get();
     }
 
+    // Get constraint object from title string
+    private Constraint getConstraintObject(final String title){
+        if(constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().isPresent())
+            return constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().get();
+        else
+            return null;
+    }
 
+    @FXML
+    void addButtonPressed(ActionEvent event) throws SQLException {
+        // Open new window
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../resources/fxml/AddNewConstraint.fxml"));
+        Parent root = null;
+        try {
+            root = fxmlLoader.load();
+        } catch (IOException e) {
+            System.out.println("Unable to load fxml file");
+            e.printStackTrace();
+        }
+        AddNewConstraintController controller=fxmlLoader.<AddNewConstraintController>getController();
+        Stage stage = new Stage();
+        stage.setTitle("Add constraint - SAM");
+        stage.setScene(new Scene(root));
+        stage.showAndWait();
+        if(controller.constraint!=null) {
+            // If user has clicked add button this bock will run
+            System.out.println("Constraint added");
+            System.out.println(controller.constraint.getTitle());
+            System.out.println(controller.constraint.getLimit());
+            System.out.println(controller.constraint.getTags());
+            constraintObservableList.add(controller.constraint);
+            database.addconstraint(controller.constraint);
+        }
+    }
+
+    @FXML
+    private void removeButtonPressed(ActionEvent event) {
+        Constraint temp = constraintListView.getSelectionModel().getSelectedItem(); // Just for testing
+        if(temp!=null)
+            temp.setUsage(temp.getUsage()+5);
+    }
 
     public void setDatabase(Database database) {
         this.database = database;

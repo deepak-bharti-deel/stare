@@ -50,14 +50,14 @@ public class Database {
     }
 
 
-    public void addconstraint(String name,String keywords,String application,int time_limit,int is_enabled) throws SQLException {
-        String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?,?)";
+    public void addconstraint(Constraint constraint) throws SQLException {
+        String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?)";
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(1,name);
-        stmt.setString(2,keywords);
-        stmt.setString(3,application);
-        stmt.setInt(4,time_limit);
-        stmt.setInt(5,is_enabled);
+        stmt.setString(2,constraint.getTitle());
+        stmt.setString(3,constraint.getTags());
+        stmt.setString(1,constraint.getApplication());
+        stmt.setInt(4,constraint.getLimit());
+        stmt.setInt(5,1);
         stmt.executeUpdate();
     }
 
