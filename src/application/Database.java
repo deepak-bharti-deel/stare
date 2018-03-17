@@ -49,6 +49,22 @@ public class Database {
         stmt.executeUpdate();
     }
 
+    public void sendUpdates() throws SQLException {
+        String query = "SELECT title,application,hour,minute,second,Duration FROM logs WHERE id = ?";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setInt(1, prev_id);
+        ResultSet rs = stmt.executeQuery();
+        // System.out.println(rs.getInt("Duration"));
+        Controller controller = Main.getController();
+        controller.setDatabase(this);
+        //System.out.println(rs.getString("title")+" "+rs.getString("application")+" "+rs.getInt("Duration"));
+        while(rs.next())
+            controller.updateInfo(
+                    rs.getString("hour")+":"+rs.getString("minute")+":"+rs.getString("second"),
+                    rs.getString("title"),
+                    rs.getString("application"),
+                    rs.getInt("Duration"));
+    }
 
     public void addconstraint(Constraint constraint) throws SQLException {
         String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?)";
@@ -131,7 +147,7 @@ public class Database {
         Date curdate = c.getTime();
         if(prev_id != -1) {
             setDuration(curdate);                   // Update Duration column of last added row
-            //sendUpdates();                          // notify controller class for change in application
+            sendUpdates();                          // notify controller class for change in application
         }
 
         query = "SELECT MAX(id) AS id FROM logs";
