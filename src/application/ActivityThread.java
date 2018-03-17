@@ -18,7 +18,6 @@ public class ActivityThread implements Runnable {
 
     @Override
     public void run() {
-
         try {
             String[] command = {"src/scripts/cont_detect.sh", };
             Process process = Runtime.getRuntime().exec(command);
