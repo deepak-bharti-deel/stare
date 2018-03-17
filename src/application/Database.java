@@ -1,19 +1,17 @@
 package application;
 
 import java.sql.*;
-import java.util.Calendar;
+import java.util.*;
 import java.util.Date;
-import java.util.Hashtable;
 
 public class Database {
-
     private Connection conn;
     private int prev_id;
     private Controller controller;
 
     public Database() {
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sam", "root", "");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sam", "root", "steve");
             System.out.println("Connection to the database has been established!!");
             prev_id = -1;
         } catch (SQLException e) {
@@ -24,6 +22,12 @@ public class Database {
 
     public void setController(Controller controller){
         this.controller=controller;
+    }
+
+    private int calculateDuration(Date curdate, Date prevdate) {
+        // calculate seconds between current time and previous time
+        int  minutes = Math.toIntExact((curdate.getTime() - prevdate.getTime()) / 1000);
+        return minutes;
     }
 
     public void setDuration(Date curdate) throws SQLException {
@@ -55,8 +59,6 @@ public class Database {
         stmt.setInt(1, prev_id);
         ResultSet rs = stmt.executeQuery();
         // System.out.println(rs.getInt("Duration"));
-        Controller controller = Main.getController();
-        controller.setDatabase(this);
         //System.out.println(rs.getString("title")+" "+rs.getString("application")+" "+rs.getInt("Duration"));
         while(rs.next())
             controller.updateInfo(
@@ -66,50 +68,9 @@ public class Database {
                     rs.getInt("Duration"));
     }
 
-    public void addconstraint(Constraint constraint) throws SQLException {
-        String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?)";
-        PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(2,constraint.getTitle());
-        stmt.setString(3,constraint.getTags());
-        stmt.setString(1,constraint.getApplication());
-        stmt.setInt(4,constraint.getLimit());
-        stmt.setInt(5,1);
-        stmt.executeUpdate();
-    }
-
-    public Hashtable<String, Integer> fillPieChart(int numberOfDays) throws Exception{  // fill the pie chart initially
-
-        numberOfDays *= (1 * 60 * 60);                                       // number of seconds in n days
-        Hashtable<String, Integer> activities = new Hashtable<>();
-        String query = "SELECT application,day,month,year,hour,minute,second,Duration  FROM logs ";
-        PreparedStatement stmt = conn.prepareStatement(query);
-        ResultSet rs = stmt.executeQuery();
-        java.util.Date currentDate = new java.util.Date();
-        int temp = 0;
-        while (rs.next()) {
-            Calendar c = Calendar.getInstance();
-            c.set(Integer.parseInt(rs.getString("year")),Integer.parseInt(rs.getString("month"))-1, Integer.parseInt(rs.getString("day")),Integer.parseInt(rs.getString("hour")), Integer.parseInt(rs.getString("minute")), Integer.parseInt(rs.getString("second")));
-            Date activityDate = c.getTime();
-            if (calculateDuration(currentDate, activityDate) <= numberOfDays) {
-                if(activities.get(rs.getString("application")) == null)
-                    temp = rs.getInt("Duration");
-                else
-                    temp = rs.getInt("Duration") + activities.get(rs.getString("application"));
-            }
-            activities.put(rs.getString("application"), temp);
-        }
-        System.out.println(activities);
-        return activities;
-    }
-
-    private int calculateDuration(Date curdate, Date prevdate) {
-        // calculate seconds between current time and previous time
-        int  minutes = Math.toIntExact((curdate.getTime() - prevdate.getTime()) / 1000);
-        return minutes;
-    }
-
     public int insertLog(String op) throws SQLException {
 
+        //fillPieChart(1);
         //op is output of the script
         String arr[] = op.split(" <--> "); //now contains title and date separately
         if (arr[0].isEmpty())
@@ -156,6 +117,98 @@ public class Database {
         if (rs.next())
             prev_id = rs.getInt("id");
         return 1;
+    }
+
+
+    public Hashtable<String, Integer> fillPieChart(int numberOfDays) throws Exception{  // fill the pie chart initially
+
+        numberOfDays *= (1 * 60 * 60);                                       // number of seconds in n days
+        Hashtable<String, Integer> activities = new Hashtable<>();
+        String query = "SELECT application,day,month,year,hour,minute,second,Duration  FROM logs ";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        Date currentDate = new Date();
+        int temp = 0;
+        while (rs.next()) {
+            Calendar c = Calendar.getInstance();
+            c.set(Integer.parseInt(rs.getString("year")),Integer.parseInt(rs.getString("month"))-1, Integer.parseInt(rs.getString("day")),Integer.parseInt(rs.getString("hour")), Integer.parseInt(rs.getString("minute")), Integer.parseInt(rs.getString("second")));
+            Date activityDate = c.getTime();
+            if (calculateDuration(currentDate, activityDate) <= numberOfDays) {
+                if(activities.get(rs.getString("application")) == null)
+                    temp = rs.getInt("Duration");
+                else
+                    temp = rs.getInt("Duration") + activities.get(rs.getString("application"));
+            }
+            activities.put(rs.getString("application"), temp);
+        }
+        System.out.println(activities);
+        return activities;
+    }
+
+    public List<Constraint> sendConstraints() throws SQLException {
+
+        List<Constraint> constraints = new ArrayList<Constraint>();
+
+        String query = "SELECT * FROM logs INNER JOIN ActivityConstraints ON logs.application = ActivityConstraints.application";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        ResultSet rs = stmt.executeQuery();
+        Calendar c = Calendar.getInstance();
+        c.set(c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH),0,0,0);
+        Date todayDate = c.getTime();
+
+        Hashtable<String,Integer> activities = new Hashtable<>();
+        int temp=0;
+        while(rs.next()){
+            c.set(Integer.parseInt(rs.getString("year")),Integer.parseInt(rs.getString("month"))-1, Integer.parseInt(rs.getString("day")),Integer.parseInt(rs.getString("hour")), Integer.parseInt(rs.getString("minute")), Integer.parseInt(rs.getString("second")));
+            Date activityStartDate = c.getTime();
+            // System.out.println(todayDate);
+            //System.out.println(activityStartDate);
+            int timeDifference = calculateDuration(activityStartDate,todayDate);
+            int duration=rs.getInt("Duration");
+            if( timeDifference >= -(rs.getInt("Duration"))){
+
+                if(timeDifference < 0)
+                    duration+=timeDifference;
+
+                if(activities.get(rs.getString("application")) == null)
+                    temp = duration;
+                else
+                    temp = duration + activities.get(rs.getString("application"));
+
+                activities.put(rs.getString("application"), temp);
+            }
+
+        }
+
+        Set<String> keys = activities.keySet();
+        for(String key: keys){
+            query = "SELECT name,keywords,time_limit,is_enabled FROM ActivityConstraints WHERE application = ?";
+            stmt = conn.prepareStatement(query);
+            stmt.setString(1,key);
+            rs = stmt.executeQuery();
+            while(rs.next()) {
+                Constraint constraint = new Constraint(
+                        rs.getString("name"),
+                        key,                                // Application name
+                        rs.getInt("time_limit"), // Limit
+                        activities.get(key),                // usage
+                        rs.getString("keywords"));  // Tags
+                constraints.add(constraint);
+            }
+        }
+
+        return constraints;
+    }
+
+    public void addconstraint(Constraint constraint) throws SQLException {
+        String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?)";
+        PreparedStatement stmt = conn.prepareStatement(query);
+        stmt.setString(2,constraint.getTitle());
+        stmt.setString(3,constraint.getTags());
+        stmt.setString(1,constraint.getApplication());
+        stmt.setInt(4,constraint.getLimit());
+        stmt.setInt(5,1);
+        stmt.executeUpdate();
     }
 
 }
