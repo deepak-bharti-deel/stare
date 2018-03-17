@@ -4,12 +4,15 @@ import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Side;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.TreeItem;
+import javafx.scene.control.TreeTableColumn;
+import javafx.util.Callback;
 
 import java.sql.SQLException;
 import java.util.Hashtable;
@@ -64,6 +67,72 @@ public class Controller {
         pieChart.setLabelsVisible(true);
         pieChart.setStartAngle(0);
         pieChart.setLegendSide(Side.LEFT);
+
+        /*
+         ** Keep it in mind: If you want the observable list to invoke event when any
+         ** attribute of the element object is change, use this.
+         */
+        constraintObservableList = FXCollections.observableArrayList(
+                constraintObservableList -> new Observable[]{constraintObservableList.usageProperty()}
+        );
+
+        constraintObservableList.addAll(
+//                new Constraint("Facebook",10,60,""),
+//                new Constraint("VLC",20,60,""),
+//                new Constraint("Youtube",30,60,""),
+//                new Constraint("Music",50,60,""),
+//                new Constraint("Stackoverflow",35,60,""),
+//                new Constraint("Idea",5,60,""),
+//                new Constraint("Chutiyap",60,60,"")
+        );
+
+        constraintListView.setItems(constraintObservableList);
+        constraintListView.setCellFactory(constraintListView -> new ConstraintListViewCell());
+
+        //setting table data
+        logTableObservableList = FXCollections.observableArrayList();
+        //fill some sample data
+        logTableObservableList.add(new Table("now","sam","Intellij"));
+        logTableObservableList.add(new Table("now","sam","Intellij"));
+        logTableObservableList.add(new Table("now","sam","Intellij"));
+        logTableObservableList.add(new Table("now","sam","Intellij"));
+        logTableObservableList.add(new Table("now","sam","Intellij"));
+
+
+        //JFXTreeTable specific things
+        initializeTreeTableColumns();
+        TreeItem<Table> root = new RecursiveTreeItem<>(logTableObservableList, RecursiveTreeObject::getChildren);
+        logTableView.getColumns().setAll(startTimeColumn, applicationColumn, titleColumn);
+        logTableView.setRoot(root);
+        logTableView.setShowRoot(false);
+
+        Main.setController(this);
+
+    }
+
+    //to initialize data source of columns in log tree table
+    public void initializeTreeTableColumns(){
+        startTimeColumn = new JFXTreeTableColumn<>("Start Time");
+        startTimeColumn.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Table, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Table, String> param) {
+                return param.getValue().getValue().startTimeProperty();
+            }
+        });
+        titleColumn = new JFXTreeTableColumn<>("Title");
+        titleColumn.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Table, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Table, String> param) {
+                return param.getValue().getValue().titleProperty();
+            }
+        });
+        applicationColumn = new JFXTreeTableColumn<>("Application");
+        applicationColumn.setCellValueFactory(new Callback<TreeTableColumn.CellDataFeatures<Table, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TreeTableColumn.CellDataFeatures<Table, String> param) {
+                return param.getValue().getValue().applicationProperty();
+            }
+        });
 
     }
 
