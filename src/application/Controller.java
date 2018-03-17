@@ -64,4 +64,11 @@ public class Controller {
         return pieChartData.stream().filter(o -> o.getName().equals(name)).findFirst().get();
     }
 
+    public void setDatabase(Database database) {
+        this.database = database;
+//        setInitialData(1);
+    }
+
+
+
 }

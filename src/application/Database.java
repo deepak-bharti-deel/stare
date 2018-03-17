@@ -9,6 +9,7 @@ public class Database {
 
     private Connection conn;
     private int prev_id;
+    private Controller controller;
 
     public Database() {
         try {
@@ -19,6 +20,10 @@ public class Database {
             e.printStackTrace();
             System.out.println("problem in connection with the database");
         }
+    }
+
+    public void setController(Controller controller){
+        this.controller=controller;
     }
 
     public void addconstraint(String name,String keywords,String application,int time_limit,int is_enabled) throws SQLException {
