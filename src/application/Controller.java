@@ -25,7 +25,6 @@ import java.util.Hashtable;
 import java.util.Set;
 
 public class Controller {
-
     @FXML
     private JFXListView<Constraint> constraintListView;
 
@@ -73,7 +72,6 @@ public class Controller {
         pieChart.setLabelsVisible(true);
         pieChart.setStartAngle(0);
         pieChart.setLegendSide(Side.LEFT);
-
         /*
          ** Keep it in mind: If you want the observable list to invoke event when any
          ** attribute of the element object is change, use this.
@@ -142,6 +140,7 @@ public class Controller {
 
     }
 
+    // Method to get instance of PieChart.Data from application name
     private PieChart.Data getPieDataObject(final String name){
         // if there is no entry for this application then add one
         if(!pieChartData.stream().filter(o -> o.getName().equals(name)).findFirst().isPresent())
@@ -180,7 +179,7 @@ public class Controller {
             System.out.println(controller.constraint.getLimit());
             System.out.println(controller.constraint.getTags());
             constraintObservableList.add(controller.constraint);
-            //database.addconstraint(controller.constraint);
+            database.addconstraint(controller.constraint);
         }
     }
 
@@ -219,13 +218,13 @@ public class Controller {
         }
 
         // Constraint data
-//        Platform.runLater(()-> {
-//            try {
-//                constraintObservableList.addAll(database.sendConstraints());
-//            } catch (SQLException e) {
-//                e.printStackTrace();
-//            }
-//        });
+        Platform.runLater(()-> {
+            try {
+                constraintObservableList.addAll(database.sendConstraints());
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void updateLogsTable(String startTime, String title, String application){
@@ -243,21 +242,20 @@ public class Controller {
     private void IntervalButtonPressed(ActionEvent event) {
         // Button background colors09
         String selected = "-fx-background-color: #71b6f2";
-        String unselected = "-fx-background-color: #b1b5bc";
-        ;
+        String unselected = "-fx-background-color: #b1b5bc";;
 
         dayButton.setStyle(unselected);
         monthButton.setStyle(unselected);
         weekButton.setStyle(unselected);
-        if (event.getSource().equals(dayButton)) {
+        if(event.getSource().equals(dayButton)) {
             dayButton.setStyle(selected);
             setInitialData(1);
         }
-        if (event.getSource().equals(monthButton)) {
+        if(event.getSource().equals(monthButton)) {
             monthButton.setStyle(selected);
             setInitialData(30);
         }
-        if (event.getSource().equals(weekButton)) {
+        if(event.getSource().equals(weekButton)) {
             weekButton.setStyle(selected);
             setInitialData(7);
         }
