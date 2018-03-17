@@ -180,7 +180,7 @@ public class Controller {
             System.out.println(controller.constraint.getLimit());
             System.out.println(controller.constraint.getTags());
             constraintObservableList.add(controller.constraint);
-            database.addconstraint(controller.constraint);
+            //database.addconstraint(controller.constraint);
         }
     }
 
@@ -189,6 +189,15 @@ public class Controller {
         Constraint temp = constraintListView.getSelectionModel().getSelectedItem(); // Just for testing
         if(temp!=null)
             temp.setUsage(temp.getUsage()+5);
+    }
+
+    // This method get info about usage from Database class
+    void updateInfo(String startTime,String title, String application, int duration){
+        //if(getPieDataObject(application)!=null)
+        Platform.runLater(()-> getPieDataObject(application).setPieValue(getPieDataObject(application).getPieValue()+duration));
+        if(getConstraintObject(application)!=null)
+            getConstraintObject(application).setUsage(duration);
+        updateLogsTable(startTime,title,application);
     }
 
     public void setDatabase(Database database) {
@@ -217,6 +226,41 @@ public class Controller {
 //                e.printStackTrace();
 //            }
 //        });
+    }
+
+    private void updateLogsTable(String startTime, String title, String application){
+        Table element  = new Table(startTime, title, application);
+        if(logTableObservableList.size()<5){
+            logTableObservableList.add(0, element);
+        }else{
+            logTableObservableList.remove(4);
+            logTableObservableList.add(0, element);
+        }
+    }
+
+    //  Add/Week/Month button action
+    @FXML
+    private void IntervalButtonPressed(ActionEvent event) {
+        // Button background colors09
+        String selected = "-fx-background-color: #71b6f2";
+        String unselected = "-fx-background-color: #b1b5bc";
+        ;
+
+        dayButton.setStyle(unselected);
+        monthButton.setStyle(unselected);
+        weekButton.setStyle(unselected);
+        if (event.getSource().equals(dayButton)) {
+            dayButton.setStyle(selected);
+            setInitialData(1);
+        }
+        if (event.getSource().equals(monthButton)) {
+            monthButton.setStyle(selected);
+            setInitialData(30);
+        }
+        if (event.getSource().equals(weekButton)) {
+            weekButton.setStyle(selected);
+            setInitialData(7);
+        }
     }
 
 }
