@@ -17,8 +17,8 @@ import java.util.Set;
 
 public class Controller {
 
-//    @FXML
-//    private JFXListView<Constraint> constraintListView;
+    @FXML
+    private JFXListView<Constraint> constraintListView;
 
     @FXML
     private JFXButton addButton;
@@ -26,8 +26,8 @@ public class Controller {
     @FXML
     private JFXButton removeButton;
 
-//    @FXML
-//    private JFXTreeTableView<Table> logTableView;
+    @FXML
+    private JFXTreeTableView<Table> logTableView;
 
     @FXML
     private PieChart pieChart;
@@ -45,14 +45,14 @@ public class Controller {
     private Database database;
 
     // Dynamically added nodes
-//    private JFXTreeTableColumn<Table, String> startTimeColumn;
-//    private JFXTreeTableColumn<Table, String> titleColumn;
-//    private JFXTreeTableColumn<Table, String> applicationColumn;
+    private JFXTreeTableColumn<Table, String> startTimeColumn;
+    private JFXTreeTableColumn<Table, String> titleColumn;
+    private JFXTreeTableColumn<Table, String> applicationColumn;
 
     // Observable lists
-//    private ObservableList<Constraint>  constraintObservableList;
+    private ObservableList<Constraint>  constraintObservableList;
     private ObservableList<PieChart.Data> pieChartData;
-//    private ObservableList<Table> logTableObservableList;
+    private ObservableList<Table> logTableObservableList;
 
     @FXML
     public void initialize(){
@@ -93,13 +93,13 @@ public class Controller {
         }
 
         // Constraint data
-        Platform.runLater(()-> {
+//        Platform.runLater(()-> {
 //            try {
 //                constraintObservableList.addAll(database.sendConstraints());
 //            } catch (SQLException e) {
 //                e.printStackTrace();
 //            }
-        });
+//        });
     }
 
 
