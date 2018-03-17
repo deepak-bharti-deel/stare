@@ -32,7 +32,7 @@ public class Main extends Application {
         controller.setDatabase(db);
         db.setController(controller);
 
-        primaryStage.setTitle("Working ;) - STARE");
+        primaryStage.setTitle("Working ;) - SAM");
         primaryStage.setScene(new Scene(root, 1000, 700));
 
         primaryStage.setOnCloseRequest(event -> {
