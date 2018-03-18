@@ -55,6 +55,8 @@ public class ConstraintListViewCell extends ListCell<Constraint> {
             title.setText(constraint.getTitle());
             usageLabel.setText(getDurationString(constraint));
             progressBar.setProgress(progress);
+            if(constraint.getLimit()==0)
+                progressBar.setProgress(1);
             percentageLabel.setText(Integer.toString((int)(progress*100)));
 
             setText(null);

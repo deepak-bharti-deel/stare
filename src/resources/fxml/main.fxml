@@ -43,7 +43,7 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <JFXTreeTableView fx:id="logTableView" maxWidth="1.7976931348623157E308" minWidth="-Infinity" GridPane.hgrow="ALWAYS">
+            <JFXTreeTableView fx:id="logTableView" maxWidth="1.7976931348623157E308" minWidth="-Infinity" tableMenuButtonVisible="true" GridPane.hgrow="ALWAYS">
                <columns>
                   <TreeTableColumn fx:id="startTimeColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="124.0" text="Start time" />
                   <TreeTableColumn fx:id="titleColumn" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="320.0" text="title" />

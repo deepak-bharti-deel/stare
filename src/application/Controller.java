@@ -110,11 +110,11 @@ public class Controller {
         //setting table data
         logTableObservableList = FXCollections.observableArrayList();
         //fill some sample data
-        logTableObservableList.add(new Table("now","sam","Intellij"));
-        logTableObservableList.add(new Table("now","sam","Intellij"));
-        logTableObservableList.add(new Table("now","sam","Intellij"));
-        logTableObservableList.add(new Table("now","sam","Intellij"));
-        logTableObservableList.add(new Table("now","sam","Intellij"));
+//        logTableObservableList.add(new Table("now","sam","Intellij"));
+//        logTableObservableList.add(new Table("now","sam","Intellij"));
+//        logTableObservableList.add(new Table("now","sam","Intellij"));
+//        logTableObservableList.add(new Table("now","sam","Intellij"));
+//        logTableObservableList.add(new Table("now","sam","Intellij"));
 
 
         //JFXTreeTable specific things
@@ -256,11 +256,11 @@ public class Controller {
     }
     public void setDatabase(Database database) {
         this.database = database;
-        setInitialData(1);
+        setInitialData(1,true);
     }
 
     // Sets initial data in pie chart and constraint
-    private void setInitialData(int days){
+    private void setInitialData(int days,boolean flag){
         // Get pie chart data
         try {
             Hashtable<String,Integer> initialdata = database.fillPieChart(days);
@@ -272,14 +272,16 @@ public class Controller {
             e.printStackTrace();
         }
 
-        // Constraint data
-        Platform.runLater(()-> {
-            try {
-                constraintObservableList.addAll(database.sendConstraint());
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        if(flag) {
+            // Constraint data
+            Platform.runLater(() -> {
+                try {
+                    constraintObservableList.addAll(database.sendConstraint());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
     }
 
     private void updateLogsTable(String startTime, String title, String application){
@@ -304,15 +306,15 @@ public class Controller {
         weekButton.setStyle(unselected);
         if(event.getSource().equals(dayButton)) {
             dayButton.setStyle(selected);
-            setInitialData(1);
+            setInitialData(1,false);
         }
         if(event.getSource().equals(monthButton)) {
             monthButton.setStyle(selected);
-            setInitialData(30);
+            setInitialData(30,false);
         }
         if(event.getSource().equals(weekButton)) {
             weekButton.setStyle(selected);
-            setInitialData(7);
+            setInitialData(7,false);
         }
     }
 
