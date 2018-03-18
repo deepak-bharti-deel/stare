@@ -22,10 +22,20 @@ public class ConstraintUpdateThread implements Runnable {
 
     @Override
     public void run() {
+
+        try {
+            check(1);
+            if(close==1)
+                return;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         while(true) {
             try {
-                Thread.sleep(60000);
-                check();
+                Thread.sleep(2000);
+                time++;
+                check(0);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -36,14 +46,23 @@ public class ConstraintUpdateThread implements Runnable {
         }
     }
 
-    public void check() throws IOException {
+    public void check(int open) throws IOException {
+        back:
         for(Constraint c : constraintObservableList){
+            System.out.println("Name "+c.getTitle());
+            System.out.println("Tags "+c.getTags());
+            System.out.println("Limit "+c.getLimit());
+            System.out.println("Application "+c.getApplication());
+            System.out.println("current application: "+application);
+            System.out.println("time: "+time);
             String tags[] = c.getTags().split(":");
             for(String tag : tags){
                 if(title.toLowerCase().contains(tag.toLowerCase())){
-                    if(c.getLimit()<=c.getUsage()+time){
+                    if(c.getLimit()<=c.getUsage()+1){
+                        System.out.println("limit "+c.getLimit());
+                        System.out.println("usage "+c.getUsage());
                         //close the application
-                        if(title.split(" - ")[1].equalsIgnoreCase(application)) {
+                        if(c.getApplication().equalsIgnoreCase(application)) {
                             String scriptName;
                             if(application.equalsIgnoreCase("google chrome") || application.equalsIgnoreCase("firefox"))
                                 scriptName = "close_browser_tab.sh";
@@ -53,9 +72,14 @@ public class ConstraintUpdateThread implements Runnable {
                             String[] command = {"src/scripts/"+scriptName};
                             Process process = Runtime.getRuntime().exec(command);
                             close = 1;
+                            if(open!=1)
+                                controller.updateConstraintProgress(c, c.getUsage()+1,application);
+                            break back;
                         }
                     }
-                    controller.updateConstraintProgress(c, c.getUsage()+time);
+                    System.out.println("updating progress");
+                    if(open!=1)
+                        controller.updateConstraintProgress(c, c.getUsage()+1,application);
                 }
             }
         }
