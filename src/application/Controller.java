@@ -247,7 +247,7 @@ public class Controller {
         // Constraint data
         Platform.runLater(()-> {
             try {
-                constraintObservableList.addAll(database.sendConstraints());
+                constraintObservableList.addAll(database.sendConstraint());
             } catch (SQLException e) {
                 e.printStackTrace();
             }
