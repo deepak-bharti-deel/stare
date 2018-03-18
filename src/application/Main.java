@@ -32,7 +32,7 @@ public class Main extends Application {
         controller.setDatabase(db);
         db.setController(controller);
 
-        primaryStage.setTitle("Working ;) - STARE");
+        primaryStage.setTitle("STARE - System Tracking & Activity Restrictions");
         primaryStage.setScene(new Scene(root, 1000, 700));
 
         primaryStage.setOnCloseRequest(event -> {
@@ -44,7 +44,7 @@ public class Main extends Application {
                 e.printStackTrace();
             }
         });
-        primaryStage.show();
+        primaryStage.show();    // now we are on Inteliij , so when a switch in activity occur the graph changes
     }
 
     public static void main(String[] args) throws IOException {

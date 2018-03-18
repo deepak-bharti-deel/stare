@@ -1,1 +1,0 @@
-xdotool key alt+F4

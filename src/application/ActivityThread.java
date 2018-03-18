@@ -18,6 +18,7 @@ public class ActivityThread implements Runnable {
 
     @Override
     public void run() {
+
         try {
             String[] command = {"src/scripts/cont_detect.sh", };
             Process process = Runtime.getRuntime().exec(command);
@@ -25,21 +26,23 @@ public class ActivityThread implements Runnable {
             String s;
             String previous=null;
             while ((s = reader.readLine()) != null) {
-//                System.out.println("Script output: " + s);
+//                System.out.printl                                 n("Script output: " + s);
                 if (s.split(" <--> ")[0].equals(previous)) {
                     // db.sendUpdates();
                     continue;
                 }else {
-//                    System.out.println("inserting to db");
-//                    int result = db.insertLog(s);
-//                    if (result == 1) {
-//                        previous = s.split(" <--> ")[0];
-//                        //System.out.println("previous=" + previous);
-//                        System.out.println(s.split(" <--> ")[0]);
-//                    }
+                    System.out.println("inserting to db");
+                    int result = db.insertLog(s);
+                    if (result == 1) {
+                        previous = s.split(" <--> ")[0];
+                        //System.out.println("previous=" + previous);
+                        System.out.println(s.split(" <--> ")[0]);
+                    }
                 }
             }
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
