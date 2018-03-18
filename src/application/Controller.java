@@ -74,6 +74,7 @@ public class Controller {
     private ObservableList<Constraint>  constraintObservableList;
     private ObservableList<PieChart.Data> pieChartData;
     private ObservableList<Table> logTableObservableList;
+    private Thread constraintUpdateThread;
 
     @FXML
     public void initialize(){
@@ -127,8 +128,6 @@ public class Controller {
 
     }
 
-
-
     //to initialize data source of columns in log tree table
     public void initializeTreeTableColumns(){
         startTimeColumn = new JFXTreeTableColumn<>("Start Time");
@@ -165,10 +164,24 @@ public class Controller {
 
     // Get constraint object from title string
     private Constraint getConstraintObject(final String title){
-        if(constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().isPresent())
+        if(constraintObservableList.stream().filter(o -> whetherTitleContainsKeyword(title, o.getTags())).findFirst().isPresent())
             return constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().get();
         else
             return null;
+//        if(constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().isPresent())
+//            return constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().get();
+//        else
+//            return null;
+    }
+
+    //function to check whether the given title contains the constraints
+    private boolean whetherTitleContainsKeyword(String title, String tags){
+        String keywords[] = tags.split(":");
+        for(String str : keywords){
+            if(title.toLowerCase().contains(str.toLowerCase()))
+                return true;
+        }
+        return false;
     }
 
     @FXML
@@ -207,15 +220,26 @@ public class Controller {
     }
 
     // This method get info about usage from Database class
-    void updateInfo(String startTime,String title, String application, int duration){
+    void updateInfo(String startTime,String title, String application, int duration, String newTitle, String newActivity){
         //if(getPieDataObject(application)!=null)
+        if(constraintUpdateThread.isAlive())
+            constraintUpdateThread.stop();
         Platform.runLater(()-> getPieDataObject(application).setPieValue(getPieDataObject(application).getPieValue()+duration));
-
-        //if(getConstraintObject(application)!=null)
-        //    getConstraintObject(application).setUsage(duration);
+//        if(getConstraintObject(application)!=null) {
+////            getConstraintObject(application).setUsage(duration);
+//
+//        }
+        ConstraintUpdateThread cut = new ConstraintUpdateThread(this, constraintObservableList, newTitle, newActivity);
+        constraintUpdateThread = new Thread(cut);
+        constraintUpdateThread.start();
         updateLogsTable(startTime,title,application);
     }
 
+    void updateConstraintProgress(Constraint constraint, int progress){
+        Platform.runLater(()->{
+            constraint.setUsage(progress);
+        });
+    }
     public void setDatabase(Database database) {
         this.database = database;
         setInitialData(1);
@@ -237,7 +261,7 @@ public class Controller {
         // Constraint data
         Platform.runLater(()-> {
             try {
-                constraintObservableList.addAll(database.sendConstraints());
+                constraintObservableList.addAll(database.sendConstraint());
             } catch (SQLException e) {
                 e.printStackTrace();
             }

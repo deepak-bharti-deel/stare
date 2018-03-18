@@ -13,7 +13,7 @@ public class Database {
 
     public Database() {
         try {
-            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sam", "root", "steve");
+            conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sam", "root", "");
             System.out.println("Yaayy! Successfully connected to database.");
             prev_id = -1;
         } catch (SQLException e) {
@@ -55,19 +55,18 @@ public class Database {
         stmt.executeUpdate();
     }
 
-    public void sendUpdates() throws SQLException {
+    public void sendUpdates(String title,String application) throws SQLException {
         String query = "SELECT title,application,hour,minute,second,Duration FROM logs WHERE id = ?";
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setInt(1, prev_id);
         ResultSet rs = stmt.executeQuery();
-       // System.out.println(rs.getInt("Duration"));
-        //System.out.println(rs.getString("title")+" "+rs.getString("application")+" "+rs.getInt("Duration"));
         while(rs.next())
             controller.updateInfo(
                     rs.getString("hour")+":"+rs.getString("minute")+":"+rs.getString("second"),
                     rs.getString("title"),
                     rs.getString("application"),
-                    rs.getInt("Duration"));
+                    rs.getInt("Duration"),
+                    title,application);
     }
 
     public int insertLog(String op) throws SQLException {
@@ -110,7 +109,7 @@ public class Database {
         Date curdate = c.getTime();
         if(prev_id != -1) {
             setDuration(curdate);                   // Update Duration column of last added row
-            sendUpdates();                          // notify controller class for change in application
+            sendUpdates(title,application);                          // notify controller class for change in application
         }
 
         query = "SELECT MAX(id) AS id FROM logs";
@@ -147,62 +146,35 @@ public class Database {
         return activities;
     }
 
-    public List<Constraint> sendConstraints() throws SQLException {
+    public List<Constraint> sendConstraint() throws SQLException {
 
-        List<Constraint> constraints = new ArrayList<Constraint>();
+        List<Constraint> list = new ArrayList<>();
 
-        String query = "SELECT * FROM logs INNER JOIN ActivityConstraints ON logs.application = ActivityConstraints.application";
+        String query = "SELECT * FROM ActivityConstraints";
         PreparedStatement stmt = conn.prepareStatement(query);
         ResultSet rs = stmt.executeQuery();
-        Calendar c = Calendar.getInstance();
-        c.set(c.get(Calendar.YEAR),c.get(Calendar.MONTH),c.get(Calendar.DAY_OF_MONTH),0,0,0);
-        Date todayDate = c.getTime();
-
-        Hashtable<String,Integer> activities = new Hashtable<>();
-        int temp=0;
         while(rs.next()){
-            c.set(Integer.parseInt(rs.getString("year")),Integer.parseInt(rs.getString("month"))-1, Integer.parseInt(rs.getString("day")),Integer.parseInt(rs.getString("hour")), Integer.parseInt(rs.getString("minute")), Integer.parseInt(rs.getString("second")));
-            Date activityStartDate = c.getTime();
-           // System.out.println(todayDate);
-            //System.out.println(activityStartDate);
-            int timeDifference = calculateDuration(activityStartDate,todayDate);
-            int duration=rs.getInt("Duration");
-            if( timeDifference >= -(rs.getInt("Duration"))){
-
-                if(timeDifference < 0)
-                    duration+=timeDifference;
-
-                if(activities.get(rs.getString("application")) == null)
-                    temp = duration;
-                else
-                    temp = duration + activities.get(rs.getString("application"));
-
-                activities.put(rs.getString("application"), temp);
-            }
-
+           Constraint constraint = new Constraint(rs.getString("name"),rs.getString("application"),rs.getInt("duration"),rs.getInt("time_limit"),rs.getString("keywords"));
+           list.add(constraint);
         }
-
-        Set<String> keys = activities.keySet();
-        for(String key: keys){
-            query = "SELECT name,keywords,time_limit,is_enabled FROM ActivityConstraints WHERE application = ?";
-            stmt = conn.prepareStatement(query);
-            stmt.setString(1,key);
-            rs = stmt.executeQuery();
-            while(rs.next()) {
-                Constraint constraint = new Constraint(
-                        rs.getString("name"),
-                        key,                                // Application name
-                        rs.getInt("time_limit"), // Limit
-                        activities.get(key),                // usage
-                        rs.getString("keywords"));  // Tags
-                constraints.add(constraint);
-            }
-        }
-
-        return constraints;
+        return list;
     }
 
+    public void updateConstraint(List<Constraint> list) throws SQLException {
+
+        ListIterator<Constraint> itr=list.listIterator();
+        while(itr.hasNext()){
+            String query = "UPDATE ActivityConstraints set duration = ? where name = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1,itr.next().getUsage());
+            stmt.setString(2,itr.next().getTitle());
+            stmt.executeUpdate();
+        }
+    }
+
+
     public void addconstraint(Constraint constraint) throws SQLException {
+
         String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?)";
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setString(2,constraint.getTitle());
