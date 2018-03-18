@@ -1,8 +1,10 @@
 package application;
 
+
 import java.sql.*;
 import java.util.*;
 import java.util.Date;
+
 
 public class Database {
     private Connection conn;
@@ -12,11 +14,11 @@ public class Database {
     public Database() {
         try {
             conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/sam", "root", "steve");
-            System.out.println("Connection to the database has been established!!");
+            System.out.println("Yaayy! Successfully connected to database.");
             prev_id = -1;
         } catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("problem in connection with the database");
+            System.out.println("Database connectivity issue.");
         }
     }
 
