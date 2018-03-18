@@ -4,18 +4,24 @@ import com.jfoenix.controls.*;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
 import javafx.application.Platform;
 import javafx.beans.Observable;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Side;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
+import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 
@@ -23,6 +29,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Controller {
     @FXML
@@ -51,6 +58,12 @@ public class Controller {
 
     @FXML
     private Database database;
+
+    @FXML
+    private Label caption;
+    @FXML
+    private Label usage;
+    DoubleBinding total;
 
     // Dynamically added nodes
     private JFXTreeTableColumn<Table, String> startTimeColumn;
@@ -113,6 +126,8 @@ public class Controller {
         Main.setController(this);
 
     }
+
+
 
     //to initialize data source of columns in log tree table
     public void initializeTreeTableColumns(){
@@ -186,16 +201,18 @@ public class Controller {
     @FXML
     private void removeButtonPressed(ActionEvent event) {
         Constraint temp = constraintListView.getSelectionModel().getSelectedItem(); // Just for testing
-        if(temp!=null)
-            temp.setUsage(temp.getUsage()+5);
+        constraintObservableList.remove(temp);
+        //temp.setUsage(10);
+        // Call remove method from datatbase
     }
 
     // This method get info about usage from Database class
     void updateInfo(String startTime,String title, String application, int duration){
         //if(getPieDataObject(application)!=null)
         Platform.runLater(()-> getPieDataObject(application).setPieValue(getPieDataObject(application).getPieValue()+duration));
-        if(getConstraintObject(application)!=null)
-            getConstraintObject(application).setUsage(duration);
+
+        //if(getConstraintObject(application)!=null)
+        //    getConstraintObject(application).setUsage(duration);
         updateLogsTable(startTime,title,application);
     }
 
@@ -242,7 +259,7 @@ public class Controller {
     private void IntervalButtonPressed(ActionEvent event) {
         // Button background colors09
         String selected = "-fx-background-color: #71b6f2";
-        String unselected = "-fx-background-color: #b1b5bc";;
+        String unselected = "-fx-background-color: #b1b5bc";
 
         dayButton.setStyle(unselected);
         monthButton.setStyle(unselected);
@@ -258,6 +275,38 @@ public class Controller {
         if(event.getSource().equals(weekButton)) {
             weekButton.setStyle(selected);
             setInitialData(7);
+        }
+    }
+
+    boolean flag=false;
+    // I don't know why the hell I'm not able to get this working in initialization function
+    // so I'm adding to mouse event :/
+    @FXML
+    private void mouseClick(MouseEvent mouseevent ) {
+        if(!flag) {
+            total = Bindings.createDoubleBinding(() ->
+                    pieChartData.stream().collect(Collectors.summingDouble(PieChart.Data::getPieValue)), pieChartData);
+            for (final PieChart.Data data : pieChart.getData()) {
+                data.getNode().addEventHandler(MouseEvent.MOUSE_ENTERED,
+                        new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent e) {
+                                String text = String.format("%.1f%%", 100*data.getPieValue()/total.get()) ;
+                                caption.setText(text);
+                                usage.setVisible(true);
+                                caption.setVisible(true);
+                            }
+                        });
+                data.getNode().addEventHandler(MouseEvent.MOUSE_EXITED,
+                        new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent e) {
+                                usage.setVisible(false);
+                                caption.setVisible(false);
+                            }
+                        });
+            }
+            flag=true;
         }
     }
 
