@@ -58,7 +58,7 @@ public class Database {
         PreparedStatement stmt = conn.prepareStatement(query);
         stmt.setInt(1, prev_id);
         ResultSet rs = stmt.executeQuery();
-        // System.out.println(rs.getInt("Duration"));
+       // System.out.println(rs.getInt("Duration"));
         //System.out.println(rs.getString("title")+" "+rs.getString("application")+" "+rs.getInt("Duration"));
         while(rs.next())
             controller.updateInfo(
@@ -70,7 +70,7 @@ public class Database {
 
     public int insertLog(String op) throws SQLException {
 
-        //fillPieChart(1);
+         //fillPieChart(1);
         //op is output of the script
         String arr[] = op.split(" <--> "); //now contains title and date separately
         if (arr[0].isEmpty())
@@ -161,7 +161,7 @@ public class Database {
         while(rs.next()){
             c.set(Integer.parseInt(rs.getString("year")),Integer.parseInt(rs.getString("month"))-1, Integer.parseInt(rs.getString("day")),Integer.parseInt(rs.getString("hour")), Integer.parseInt(rs.getString("minute")), Integer.parseInt(rs.getString("second")));
             Date activityStartDate = c.getTime();
-            // System.out.println(todayDate);
+           // System.out.println(todayDate);
             //System.out.println(activityStartDate);
             int timeDifference = calculateDuration(activityStartDate,todayDate);
             int duration=rs.getInt("Duration");
