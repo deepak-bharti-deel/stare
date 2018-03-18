@@ -175,11 +175,11 @@ public class Database {
 
     public void addconstraint(Constraint constraint) throws SQLException {
 
-        String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?)";
+        String query = "INSERT INTO ActivityConstraints values (?,?,?,?,?,0)";
         PreparedStatement stmt = conn.prepareStatement(query);
-        stmt.setString(2,constraint.getTitle());
-        stmt.setString(3,constraint.getTags());
-        stmt.setString(1,constraint.getApplication());
+        stmt.setString(1,constraint.getTitle());
+        stmt.setString(2,constraint.getTags());
+        stmt.setString(3    ,constraint.getApplication());
         stmt.setInt(4,constraint.getLimit());
         stmt.setInt(5,1);
         stmt.executeUpdate();

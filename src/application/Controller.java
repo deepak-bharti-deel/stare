@@ -174,6 +174,13 @@ public class Controller {
 //            return null;
     }
 
+    public Constraint getConstraintObjectByTitle(String title){
+        if(constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().isPresent())
+            return constraintObservableList.stream().filter(o -> o.getTitle().equals(title)).findFirst().get();
+        else
+            return null;
+    }
+
     //function to check whether the given title contains the constraints
     private boolean whetherTitleContainsKeyword(String title, String tags){
         String keywords[] = tags.split(":");
@@ -222,7 +229,7 @@ public class Controller {
     // This method get info about usage from Database class
     void updateInfo(String startTime,String title, String application, int duration, String newTitle, String newActivity){
         //if(getPieDataObject(application)!=null)
-        if(constraintUpdateThread.isAlive())
+        if(constraintUpdateThread!=null && constraintUpdateThread.isAlive())
             constraintUpdateThread.stop();
         Platform.runLater(()-> getPieDataObject(application).setPieValue(getPieDataObject(application).getPieValue()+duration));
 //        if(getConstraintObject(application)!=null) {
@@ -235,9 +242,16 @@ public class Controller {
         updateLogsTable(startTime,title,application);
     }
 
-    void updateConstraintProgress(Constraint constraint, int progress){
+    void updateConstraintProgress(Constraint constraint, int progress, String application){
         Platform.runLater(()->{
-            constraint.setUsage(progress);
+//            constraint.setUsage(progress);
+            if(getConstraintObjectByTitle(constraint.getTitle())!=null) {
+                System.out.println("progress: " + progress);
+                getConstraintObjectByTitle(constraint.getTitle()).setUsage(progress);
+//                Constraint cc = getConstraintObject(application);
+//                double frac = ((double)progress)/cc.getLimit();
+//                cc.setUsage();
+            }
         });
     }
     public void setDatabase(Database database) {
