@@ -73,9 +73,9 @@ public class Controller {
         pieChart.setStartAngle(0);
         pieChart.setLegendSide(Side.LEFT);
         /*
-         ** Keep it in mind: If you want the observable list to invoke event when any
-         ** attribute of the element object is change, use this.
-         */
+        ** Keep it in mind: If you want the observable list to invoke event when any
+        ** attribute of the element object is change, use this.
+        */
         constraintObservableList = FXCollections.observableArrayList(
                 constraintObservableList -> new Observable[]{constraintObservableList.usageProperty()}
         );

@@ -1,13 +1,12 @@
 package application;
 
 import com.jfoenix.controls.JFXListCell;
-import com.jfoenix.controls.JFXProgressBar;
 import javafx.beans.property.IntegerProperty;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
-
+import com.jfoenix.controls.JFXProgressBar;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import java.io.IOException;
 
 
@@ -32,7 +31,7 @@ public class ConstraintListViewCell extends ListCell<Constraint> {
     private Label usageLabel;
 
     @Override
-    protected void updateItem(Constraint constraint, boolean empty){
+    protected void updateItem(Constraint constraint,boolean empty){
         super.updateItem(constraint, empty);
         if(empty || constraint == null) {   //If empty, skip it
             setText(null);

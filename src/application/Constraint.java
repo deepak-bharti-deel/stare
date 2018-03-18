@@ -1,7 +1,6 @@
 package application;
 
 import javafx.beans.property.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class Constraint {
     public static List<Constraint> constraintList = new ArrayList<>();    // Contains current constarints
     private BooleanProperty isEnabled = new SimpleBooleanProperty();// is constraint active
 
-    public Constraint(String title, String application, int usage, int limit, String tags){
+    public Constraint(String title,String application,int usage,int limit,String tags){
         this.title.set(title);
         this.application.set(application);
         this.usage.set(usage);
