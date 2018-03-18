@@ -35,12 +35,23 @@ public class AddNewConstraintController {
     @FXML
     private void addPressed(ActionEvent event) {
         String tags = String.join(":",keywordChipView.getChips());
+        int limit = (int)setLimitSlider.getValue();
+        if(blockToggleButton.isSelected())
+            limit=0;
         constraint = new Constraint(
                 constraintNameTextField.getText(),
                 applicationTextField.getText(),
                 0,
-                (int)setLimitSlider.getValue(),
+                limit,
                 tags);
         ((Node)(event.getSource())).getScene().getWindow().hide();
+    }
+
+    @FXML
+    void blockToggleAction(ActionEvent event) {
+        if(!blockToggleButton.isSelected())
+            setLimitSlider.setDisable(false);
+        else
+            setLimitSlider.setDisable(true);
     }
 }

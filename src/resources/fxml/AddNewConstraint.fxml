@@ -26,7 +26,7 @@
                         <Insets top="20.0" />
                      </VBox.margin>
                   </JFXTextField>
-                  <JFXToggleButton fx:id="blockToggleButton" text="Block">
+                  <JFXToggleButton fx:id="blockToggleButton" onAction="#blockToggleAction" text="Block">
                      <VBox.margin>
                         <Insets top="20.0" />
                      </VBox.margin>
