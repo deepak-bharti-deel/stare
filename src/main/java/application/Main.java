@@ -20,7 +20,7 @@ public class Main extends Application {
 
         db = new Database();
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../resources/fxml/main.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/main.fxml"));
         Parent root = null;
         try {
             root = fxmlLoader.load();

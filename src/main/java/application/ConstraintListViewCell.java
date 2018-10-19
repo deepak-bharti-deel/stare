@@ -38,7 +38,7 @@ public class ConstraintListViewCell extends ListCell<Constraint> {
             setGraphic(null);
         } else {
             if (loader == null) {           //set message body FXML
-                loader = new FXMLLoader(getClass().getResource("../resources/fxml/ConstraintCell.fxml"));
+                loader = new FXMLLoader(getClass().getResource("/fxml/ConstraintCell.fxml"));
                 loader.setController(this); //and set this class as it's controller
                 try {
                     loader.load();

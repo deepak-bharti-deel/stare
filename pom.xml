@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>dbads</groupId>
+  <artifactId>stare</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+
+  <properties>
+
+    <!-- Source properties -->
+    <source.version>1.9</source.version>
+    <target.version>1.9</target.version>
+
+    <!-- Maven plugins properties -->
+    <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
+    <javafx-maven-plugin.version>8.8.3</javafx-maven-plugin.version>
+
+    <!-- Dependency versions -->
+    <com.jfoenix.version>9.0.4</com.jfoenix.version>
+    <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven-compiler-plugin.version}</version>
+        <configuration>
+          <source>${source.version}</source>
+          <target>${target.version}</target>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.zenjava</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>${javafx-maven-plugin.version}</version>
+        <configuration>
+          <vendor>dbads</vendor>
+          <mainClass>application.Main</mainClass>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+  <dependencies>
+    
+    <dependency>
+      <groupId>com.jfoenix</groupId>
+      <artifactId>jfoenix</artifactId>
+      <version>${com.jfoenix.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>${mysql-connector-java.version}</version>
+    </dependency>
+
+  </dependencies>
+
+</project>
