@@ -8,6 +8,14 @@ https://github.com/javafx-maven-plugin/javafx-maven-plugin
 
 ### Linux
 
+#### Requirements
+
+For DEB packges: **dpkg-deb** must be installed.
+
+For RPM packages: **rpmbuild** must be installed.
+
+#### Building
+
 Build the native package with:
 
 ```bash
