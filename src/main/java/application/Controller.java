@@ -1,7 +1,16 @@
 package application;
 
-import com.jfoenix.controls.*;
+import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
+import com.jfoenix.controls.JFXTreeTableColumn;
+import com.jfoenix.controls.JFXTreeTableView;
+import com.jfoenix.controls.RecursiveTreeItem;
 import com.jfoenix.controls.datamodels.treetable.RecursiveTreeObject;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javafx.application.Platform;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
@@ -21,15 +30,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeTableColumn;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Callback;
-
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Hashtable;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Controller {
     @FXML
@@ -194,7 +196,7 @@ public class Controller {
     @FXML
     void addButtonPressed(ActionEvent event) throws SQLException {
         // Open new window
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("../resources/fxml/AddNewConstraint.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/AddNewConstraint.fxml"));
         Parent root = null;
         try {
             root = fxmlLoader.load();

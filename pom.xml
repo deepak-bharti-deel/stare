@@ -12,15 +12,15 @@
   <properties>
 
     <!-- Source properties -->
-    <source.version>1.8</source.version>
-    <target.version>1.8</target.version>
+    <source.version>1.9</source.version>
+    <target.version>1.9</target.version>
 
     <!-- Maven plugins properties -->
     <maven-compiler-plugin.version>3.1</maven-compiler-plugin.version>
     <javafx-maven-plugin.version>8.8.3</javafx-maven-plugin.version>
 
     <!-- Dependency versions -->
-    <com.jfoenix.version>8.0.4</com.jfoenix.version>
+    <com.jfoenix.version>9.0.4</com.jfoenix.version>
     <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
   </properties>
 
